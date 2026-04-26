@@ -4,207 +4,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Obevoir — Intelligence Personnelle</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --gold: #C9A84C;
-  --gold-dim: rgba(201,168,76,0.12);
-  --gold-border: rgba(201,168,76,0.25);
-  --gold-border-s: rgba(201,168,76,0.45);
-  --navy: #0A1628;
-  --navy-2: #060F1E;
-  --navy-3: #0D1A2E;
-  --navy-4: #112038;
-  --blue-light: #4A7AC8;
-  --blue-dim: rgba(74,122,200,0.12);
-  --blue-border: rgba(74,122,200,0.2);
-  --text: #E8EDF5;
-  --text-mid: #8AA0C0;
-  --text-dim: #3A5070;
-  --success: #3DBE7A;
-}
-html, body { height: 100%; overflow: hidden; background: var(--navy-2); color: var(--text); font-family: 'DM Sans', sans-serif; }
-.app { display: flex; height: 100vh; }
-.sidebar { width: 220px; background: var(--navy-2); border-right: 0.5px solid var(--gold-border); display: flex; flex-direction: column; flex-shrink: 0; }
-.brand { padding: 24px 18px 20px; border-bottom: 0.5px solid var(--gold-border); text-align: center; }
-.brand-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #C9A84C, #8B6914); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--navy-2); box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 8px 24px rgba(201,168,76,0.15); position: relative; }
-.brand-avatar::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--success); border-radius: 50%; border: 2px solid var(--navy-2); }
-.brand-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; letter-spacing: 0.18em; color: var(--gold); margin-bottom: 3px; }
-.brand-sub { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
-.section-label { font-size: 8px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 18px 6px; }
-.modes { padding: 0 10px; display: flex; flex-direction: column; gap: 2px; }
-.mode-btn { padding: 7px 10px; border-radius: 7px; border: 0.5px solid transparent; background: transparent; color: var(--text-mid); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-.mode-btn:hover { background: var(--blue-dim); color: var(--text); border-color: var(--blue-border); }
-.mode-btn.active { background: var(--gold-dim); border-color: var(--gold-border-s); color: var(--gold); }
-.memory-panel { margin-top: auto; border-top: 0.5px solid var(--gold-border); padding: 14px 18px; }
-.memory-title { font-size: 8px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 8px; }
-.memory-item { font-size: 10px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; line-height: 1.6; }
-.memory-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; opacity: 0.6; }
-.stats-row { display: flex; gap: 6px; padding: 10px 18px 16px; }
-.stat { flex: 1; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 6px; padding: 6px 8px; text-align: center; }
-.stat-val { font-size: 11px; color: var(--gold); font-weight: 500; display: block; }
-.stat-label { font-size: 8px; color: var(--text-dim); display: block; }
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.status-bar { display: flex; gap: 6px; padding: 8px 22px; border-bottom: 0.5px solid var(--blue-border); background: rgba(6,12,26,0.6); flex-shrink: 0; }
-.status-pill { display: flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 12px; background: var(--navy-3); border: 0.5px solid var(--blue-border); font-size: 10px; color: var(--text-mid); }
-.status-dot { width: 5px; height: 5px; border-radius: 50%; }
-.dot-green { background: var(--success); }
-.dot-gold { background: var(--gold); }
-.dot-blue { background: var(--blue-light); }
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; border-bottom: 0.5px solid var(--gold-border); flex-shrink: 0; }
-.mode-badge { font-size: 11px; color: var(--gold); letter-spacing: 0.06em; background: var(--gold-dim); border: 0.5px solid var(--gold-border-s); border-radius: 20px; padding: 3px 10px; }
-.lang-badge { font-size: 10px; color: var(--text-mid); background: var(--blue-dim); border: 0.5px solid var(--blue-border); border-radius: 20px; padding: 3px 10px; margin-left: 8px; }
-.icon-btn { width: 28px; height: 28px; border-radius: 7px; border: 0.5px solid var(--blue-border); background: transparent; color: var(--text-mid); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; }
-.icon-btn:hover { border-color: var(--gold-border); color: var(--gold); }
-.messages { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: thin; scrollbar-color: var(--navy-4) transparent; }
-.welcome { margin: auto; text-align: center; padding: 30px 20px; }
-.welcome-logo { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--gold); letter-spacing: 0.15em; margin-bottom: 6px; }
-.welcome-tagline { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--text-mid); margin-bottom: 28px; }
-.welcome-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 500px; }
-.chip { padding: 8px 16px; border-radius: 22px; border: 0.5px solid var(--blue-border); background: var(--navy-3); color: var(--text-mid); font-size: 12px; cursor: pointer; transition: all 0.25s; }
-.chip:hover { border-color: var(--gold-border-s); color: var(--gold); background: var(--gold-dim); transform: translateY(-1px); }
-.msg { display: flex; gap: 10px; animation: fadeUp 0.3s ease; }
-.msg.user { flex-direction: row-reverse; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.msg-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; margin-top: 2px; }
-.msg-av.ai { background: linear-gradient(135deg, #C9A84C, #8B6914); color: var(--navy-2); font-family: 'Cormorant Garamond', serif; font-size: 13px; }
-.msg-av.user { background: var(--navy-4); border: 0.5px solid var(--blue-border); color: var(--text-mid); }
-.msg-content { max-width: 76%; }
-.bubble { padding: 11px 15px; border-radius: 13px; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; }
-.msg.ai .bubble { background: var(--navy-3); border: 0.5px solid var(--blue-border); border-top-left-radius: 3px; color: var(--text); }
-.msg.user .bubble { background: rgba(201,168,76,0.08); border: 0.5px solid var(--gold-border-s); border-top-right-radius: 3px; color: var(--text); }
-.msg-time { font-size: 9px; color: var(--text-dim); margin-top: 4px; }
-.typing-wrap { display: flex; gap: 10px; }
-.typing { display: flex; align-items: center; gap: 5px; padding: 11px 16px; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 13px; border-top-left-radius: 3px; }
-.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); opacity: 0.35; animation: blink 1.4s infinite; }
-@keyframes blink { 0%,80%,100% { opacity: 0.25; transform: scale(0.85); } 40% { opacity: 1; transform: scale(1.15); } }
-.input-area { border-top: 0.5px solid var(--gold-border); padding: 12px 22px 18px; flex-shrink: 0; background: var(--navy-2); }
-.tool-bar { display: flex; gap: 6px; margin-bottom: 10px; }
-.tool-btn { padding: 4px 11px; border-radius: 6px; border: 0.5px solid var(--blue-border); background: transparent; color: var(--text-mid); font-size: 11px; cursor: pointer; }
-.input-row { display: flex; gap: 8px; align-items: flex-end; }
-textarea { flex: 1; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 11px; padding: 11px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13.5px; resize: none; outline: none; min-height: 44px; max-height: 120px; }
-.send-btn { width: 44px; height: 44px; border-radius: 11px; background: var(--gold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  :root { --gold: #C9A84C; --navy: #0A1628; --text: #E8EDF5; }
+  body { background: #060F1E; color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; display: flex; height: 100vh; flex-direction: column; }
+  .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+  .msg { max-width: 80%; padding: 12px; border-radius: 10px; line-height: 1.5; font-size: 14px; }
+  .user { align-self: flex-end; background: rgba(201,168,76,0.15); border: 1px solid var(--gold); }
+  .ai { align-self: flex-start; background: #0D1A2E; border: 1px solid #1A2E4E; }
+  .input-area { padding: 20px; border-top: 1px solid #1A2E4E; display: flex; gap: 10px; }
+  textarea { flex: 1; background: #0D1A2E; border: 1px solid #1A2E4E; color: white; padding: 12px; border-radius: 8px; resize: none; }
+  button { background: var(--gold); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+  .typing { font-size: 12px; color: var(--gold); margin-bottom: 10px; display: none; }
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-avatar">O</div>
-      <div class="brand-name">OBEVOIR</div>
-      <div class="brand-sub">Intelligence Personnelle</div>
-    </div>
-    <div class="section-label">Modes</div>
-    <div class="modes">
-      <button class="mode-btn active" onclick="setMode(this,'general','Général')">◈ Général</button>
-      <button class="mode-btn" onclick="setMode(this,'manager','Manager')">⊞ Manager</button>
-      <button class="mode-btn" onclick="setMode(this,'mentor','Mentor')">◎ Mentor</button>
-      <button class="mode-btn" onclick="setMode(this,'precepteur','Précepteur')">◇ Précepteur</button>
-      <button class="mode-btn" onclick="setMode(this,'lmig','LMIG')">▣ LMIG</button>
-      <button class="mode-btn" onclick="setMode(this,'perso','Perso')">♡ Perso</button>
-    </div>
-    <div class="memory-panel">
-      <div class="memory-title">Mémoire Active</div>
-      <div class="memory-item"><span class="memory-dot"></span>LMIG Holding</div>
-      <div class="memory-item"><span class="memory-dot"></span>DG Fondateur · Dakar</div>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="status-bar">
-      <div class="status-pill"><span class="status-dot dot-green"></span>Actif</div>
-      <div class="status-pill"><span class="status-dot dot-gold"></span>Gemini 1.5 Flash</div>
-    </div>
-    <div class="topbar">
-      <span class="mode-badge" id="modeBadge">Mode Général</span>
-      <button class="icon-btn" onclick="clearChat()">↺</button>
-    </div>
-    <div class="messages" id="messages">
-      <div class="welcome" id="welcome">
-        <div class="welcome-logo">Obevoir</div>
-        <div class="welcome-tagline">Ton intelligence. Ta voix. Ta vision.</div>
-      </div>
-    </div>
-    <div class="input-area">
-      <div class="input-row">
-        <textarea id="inp" placeholder="Parle à Obevoir..." rows="1" onkeydown="handleKey(event)" oninput="resize(this)"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="send()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#060F1E" stroke-width="2.2"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg>
-        </button>
-      </div>
-    </div>
-  </main>
-</div>
+  <div class="messages" id="chat">
+    <div class="msg ai">Bonjour Obed. Je suis Obevoir. Comment puis-je t'aider aujourd'hui ?</div>
+  </div>
+  <div id="typing" class="typing" style="padding-left: 20px;">Obevoir réfléchit...</div>
+  <div class="input-area">
+    <textarea id="inp" placeholder="Écris ici..." rows="1"></textarea>
+    <button id="btn" onclick="send()">Envoyer</button>
+  </div>
 
 <script>
-const OBED_PROFILE = "Tu es OBEVOIR, l'intelligence de LOUZOLO Falone Obed (23 ans, Dakar, DG de LMIG). Sois direct, stratégique et fidèle.";
-const MODE_INSTRUCTIONS = { general: "Rôle adaptatif.", manager: "Focus organisation.", mentor: "Focus stratégie.", precepteur: "Focus savoir.", lmig: "Focus LMIG.", perso: "Focus humain." };
-
-let currentMode = 'general';
-let conversationHistory = [];
-
-function setMode(btn, mode, label) {
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentMode = mode;
-  document.getElementById('modeBadge').textContent = 'Mode ' + label;
-}
-
-function addMsg(text, role) {
-  const w = document.getElementById('welcome'); if (w) w.remove();
-  const c = document.getElementById('messages');
-  const d = document.createElement('div');
-  d.className = 'msg ' + role;
-  d.innerHTML = `<div class="msg-av ${role}">${role==='ai'?'O':'OB'}</div><div class="msg-content"><div class="bubble">${text}</div></div>`;
-  c.appendChild(d);
-  c.scrollTop = c.scrollHeight;
-}
-
-function addTyping() {
-  const d = document.createElement('div'); d.id = 'typing'; d.className = 'typing-wrap';
-  d.innerHTML = `<div class="msg-av ai">O</div><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-  document.getElementById('messages').appendChild(d);
-}
-
-function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+const OBED_PROFILE = "Tu es OBEVOIR, l'intelligence de LOUZOLO Falone Obed. DG de LMIG. Sois direct et stratégique.";
+let history = [];
 
 async function send() {
   const inp = document.getElementById('inp');
   const text = inp.value.trim();
   if (!text) return;
 
+  // UI
   addMsg(text, 'user');
   inp.value = '';
-  const system = OBED_PROFILE + " " + MODE_INSTRUCTIONS[currentMode];
-  conversationHistory.push({ role: 'user', parts: [{ text: text }] });
-
-  document.getElementById('sendBtn').disabled = true;
-  addTyping();
+  document.getElementById('typing').style.display = 'block';
+  
+  history.push({ role: "user", parts: [{ text: text }] });
 
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, messages: conversationHistory })
+      body: JSON.stringify({ system: OBED_PROFILE, messages: history })
     });
+
     const data = await res.json();
-    removeTyping();
-    const reply = data.reply || "Erreur de réponse.";
+    document.getElementById('typing').style.display = 'none';
+
+    const reply = data.reply || "Erreur inconnue.";
     addMsg(reply, 'ai');
-    conversationHistory.push({ role: 'model', parts: [{ text: reply }] });
+    history.push({ role: "model", parts: [{ text: reply }] });
+
   } catch (e) {
-    removeTyping();
-    addMsg("Erreur réseau.", "ai");
+    document.getElementById('typing').style.display = 'none';
+    addMsg("Erreur réseau : " + e.message, 'ai');
   }
-  document.getElementById('sendBtn').disabled = false;
 }
 
-function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
-function resize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-function clearChat() { conversationHistory = []; location.reload(); }
+function addMsg(txt, side) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + side;
+  div.innerText = txt;
+  document.getElementById('chat').appendChild(div);
+  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+}
+
+document.getElementById('inp').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
 </script>
 </body>
 </html>
