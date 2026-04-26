@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Obevoir — Intelligence Personnelle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #C9A84C;
+  --gold-dim: rgba(201,168,76,0.12);
+  --gold-border: rgba(201,168,76,0.25);
+  --gold-border-s: rgba(201,168,76,0.45);
+  --navy: #0A1628;
+  --navy-2: #060F1E;
+  --navy-3: #0D1A2E;
+  --navy-4: #112038;
+  --blue-light: #4A7AC8;
+  --blue-dim: rgba(74,122,200,0.12);
+  --blue-border: rgba(74,122,200,0.2);
+  --text: #E8EDF5;
+  --text-mid: #8AA0C0;
+  --text-dim: #3A5070;
+  --success: #3DBE7A;
+}
+html, body { height: 100%; overflow: hidden; background: var(--navy-2); color: var(--text); font-family: 'DM Sans', sans-serif; }
+.app { display: flex; height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { width: 220px; background: var(--navy-2); border-right: 0.5px solid var(--gold-border); display: flex; flex-direction: column; flex-shrink: 0; }
+.brand { padding: 24px 18px 20px; border-bottom: 0.5px solid var(--gold-border); text-align: center; }
+.brand-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #C9A84C, #8B6914); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--navy-2); box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 8px 24px rgba(201,168,76,0.15); position: relative; }
+.brand-avatar::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--success); border-radius: 50%; border: 2px solid var(--navy-2); }
+.brand-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; letter-spacing: 0.18em; color: var(--gold); margin-bottom: 3px; }
+.brand-sub { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.section-label { font-size: 8px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 18px 6px; }
+.modes { padding: 0 10px; display: flex; flex-direction: column; gap: 2px; }
+.mode-btn { padding: 7px 10px; border-radius: 7px; border: 0.5px solid transparent; background: transparent; color: var(--text-mid); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+.mode-btn:hover { background: var(--blue-dim); color: var(--text); border-color: var(--blue-border); }
+.mode-btn.active { background: var(--gold-dim); border-color: var(--gold-border-s); color: var(--gold); }
+.memory-panel { margin-top: auto; border-top: 0.5px solid var(--gold-border); padding: 14px 18px; }
+.memory-title { font-size: 8px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 8px; }
+.memory-item { font-size: 10px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; line-height: 1.6; }
+.memory-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; opacity: 0.6; }
+.stats-row { display: flex; gap: 6px; padding: 10px 18px 16px; }
+.stat { flex: 1; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 6px; padding: 6px 8px; text-align: center; }
+.stat-val { font-size: 11px; color: var(--gold); font-weight: 500; display: block; }
+.stat-label { font-size: 8px; color: var(--text-dim); display: block; }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.status-bar { display: flex; gap: 6px; padding: 8px 22px; border-bottom: 0.5px solid var(--blue-border); background: rgba(6,12,26,0.6); flex-shrink: 0; }
+.status-pill { display: flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 12px; background: var(--navy-3); border: 0.5px solid var(--blue-border); font-size: 10px; color: var(--text-mid); }
+.status-dot { width: 5px; height: 5px; border-radius: 50%; }
+.dot-green { background: var(--success); }
+.dot-gold { background: var(--gold); }
+.dot-blue { background: var(--blue-light); }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; border-bottom: 0.5px solid var(--gold-border); flex-shrink: 0; }
+.mode-badge { font-size: 11px; color: var(--gold); letter-spacing: 0.06em; background: var(--gold-dim); border: 0.5px solid var(--gold-border-s); border-radius: 20px; padding: 3px 10px; }
+.lang-badge { font-size: 10px; color: var(--text-mid); background: var(--blue-dim); border: 0.5px solid var(--blue-border); border-radius: 20px; padding: 3px 10px; margin-left: 8px; }
+.icon-btn { width: 28px; height: 28px; border-radius: 7px; border: 0.5px solid var(--blue-border); background: transparent; color: var(--text-mid); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; }
+.icon-btn:hover { border-color: var(--gold-border); color: var(--gold); }
+
+/* MESSAGES */
+.messages { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: thin; scrollbar-color: var(--navy-4) transparent; }
+.messages::-webkit-scrollbar { width: 3px; }
+.messages::-webkit-scrollbar-thumb { background: var(--navy-4); border-radius: 3px; }
+.welcome { margin: auto; text-align: center; padding: 30px 20px; }
+.welcome-logo { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--gold); letter-spacing: 0.15em; margin-bottom: 6px; }
+.welcome-tagline { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--text-mid); margin-bottom: 28px; }
+.welcome-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 500px; }
+.chip { padding: 8px 16px; border-radius: 22px; border: 0.5px solid var(--blue-border); background: var(--navy-3); color: var(--text-mid); font-size: 12px; cursor: pointer; transition: all 0.25s; }
+.chip:hover { border-color: var(--gold-border-s); color: var(--gold); background: var(--gold-dim); transform: translateY(-1px); }
+.msg { display: flex; gap: 10px; animation: fadeUp 0.3s ease; }
+.msg.user { flex-direction: row-reverse; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.msg-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; margin-top: 2px; }
+.msg-av.ai { background: linear-gradient(135deg, #C9A84C, #8B6914); color: var(--navy-2); font-family: 'Cormorant Garamond', serif; font-size: 13px; }
+.msg-av.user { background: var(--navy-4); border: 0.5px solid var(--blue-border); color: var(--text-mid); }
+.msg-content { max-width: 76%; }
+.bubble { padding: 11px 15px; border-radius: 13px; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; }
+.msg.ai .bubble { background: var(--navy-3); border: 0.5px solid var(--blue-border); border-top-left-radius: 3px; color: var(--text); }
+.msg.user .bubble { background: rgba(201,168,76,0.08); border: 0.5px solid var(--gold-border-s); border-top-right-radius: 3px; color: var(--text); }
+.msg-time { font-size: 9px; color: var(--text-dim); margin-top: 4px; }
+.msg.user .msg-time { text-align: right; }
+.typing-wrap { display: flex; gap: 10px; }
+.typing { display: flex; align-items: center; gap: 5px; padding: 11px 16px; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 13px; border-top-left-radius: 3px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); opacity: 0.35; animation: blink 1.4s infinite; }
+.dot:nth-child(2) { animation-delay: 0.22s; }
+.dot:nth-child(3) { animation-delay: 0.44s; }
+@keyframes blink { 0%,80%,100% { opacity: 0.25; transform: scale(0.85); } 40% { opacity: 1; transform: scale(1.15); } }
+.msg-img { max-width: 280px; border-radius: 10px; margin-top: 8px; border: 0.5px solid var(--blue-border); }
+
+/* INPUT */
+.input-area { border-top: 0.5px solid var(--gold-border); padding: 12px 22px 18px; flex-shrink: 0; background: var(--navy-2); }
+.tool-bar { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.tool-btn { display: flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 6px; border: 0.5px solid var(--blue-border); background: transparent; color: var(--text-mid); font-size: 11px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+.tool-btn:hover { border-color: var(--gold-border); color: var(--gold); background: var(--gold-dim); }
+.tool-btn.gold { border-color: var(--gold-border-s); color: var(--gold); }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+textarea { flex: 1; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 11px; padding: 11px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13.5px; resize: none; outline: none; min-height: 44px; max-height: 120px; line-height: 1.5; transition: border-color 0.2s; }
+textarea::placeholder { color: var(--text-dim); }
+textarea:focus { border-color: var(--gold-border); }
+.mic-btn { width: 44px; height: 44px; border-radius: 11px; background: var(--navy-3); border: 0.5px solid var(--blue-border); color: var(--text-mid); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.mic-btn:hover { border-color: var(--gold-border); color: var(--gold); }
+.mic-btn.recording { border-color: #E05252; color: #E05252; animation: micPulse 1s ease infinite; }
+@keyframes micPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(224,82,82,0.3); } 50% { box-shadow: 0 0 0 8px rgba(224,82,82,0); } }
+.send-btn { width: 44px; height: 44px; border-radius: 11px; background: var(--gold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 4px 14px rgba(201,168,76,0.25); }
+.send-btn:hover { background: #D4B060; transform: scale(1.04); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.file-preview { display: none; align-items: center; gap: 8px; padding: 8px 12px; background: var(--navy-4); border: 0.5px solid var(--blue-border); border-radius: 8px; margin-bottom: 8px; font-size: 12px; color: var(--text-mid); }
+.file-preview.show { display: flex; }
+.file-remove { margin-left: auto; cursor: pointer; color: var(--text-dim); font-size: 14px; }
+.file-remove:hover { color: #E05252; }
+@media (max-width: 680px) { .sidebar { display: none; } .welcome-logo { font-size: 38px; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-avatar">O</div>
+      <div class="brand-name">OBEVOIR</div>
+      <div class="brand-sub">Intelligence Personnelle</div>
+    </div>
+    <div class="section-label">Modes</div>
+    <div class="modes">
+      <button class="mode-btn active" onclick="setMode(this,'general','Général')"><span>◈</span> Général</button>
+      <button class="mode-btn" onclick="setMode(this,'manager','Manager')"><span>⊞</span> Manager</button>
+      <button class="mode-btn" onclick="setMode(this,'mentor','Mentor')"><span>◎</span> Mentor</button>
+      <button class="mode-btn" onclick="setMode(this,'precepteur','Précepteur')"><span>◇</span> Précepteur</button>
+      <button class="mode-btn" onclick="setMode(this,'lmig','LMIG')"><span>▣</span> LMIG</button>
+      <button class="mode-btn" onclick="setMode(this,'perso','Perso')"><span>♡</span> Perso</button>
+    </div>
+    <div class="memory-panel">
+      <div class="memory-title">Mémoire Active</div>
+      <div class="memory-item"><span class="memory-dot"></span>LMIG · LERMAR Foods · LERMAR Trans</div>
+      <div class="memory-item"><span class="memory-dot"></span>DG Fondateur · Dakar</div>
+      <div class="memory-item"><span class="memory-dot"></span>Grâce · Nkayi, Congo-B.</div>
+      <div class="memory-item"><span class="memory-dot"></span>FR · EN · Lingala</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-val">21</span><span class="stat-label">Ans</span></div>
+      <div class="stat"><span class="stat-val">LMIG</span><span class="stat-label">Holding</span></div>
+      <div class="stat"><span class="stat-val">DAK</span><span class="stat-label">Base</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="status-bar">
+      <div class="status-pill"><span class="status-dot dot-green"></span>Actif</div>
+      <div class="status-pill"><span class="status-dot dot-gold"></span>Gemini · Gratuit</div>
+      <div class="status-pill"><span class="status-dot dot-blue"></span>FR · EN · Lingala</div>
+    </div>
+    <div class="topbar">
+      <div style="display:flex;align-items:center;">
+        <span class="mode-badge" id="modeBadge">Mode Général</span>
+        <span class="lang-badge">Français</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="icon-btn" onclick="clearChat()" title="Nouvelle conversation">↺</button>
+        <button class="icon-btn" title="Paramètres">⚙</button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-logo">Obevoir</div>
+        <div class="welcome-tagline">Ton intelligence. Ta voix. Ta vision.</div>
+        <div class="welcome-chips">
+          <div class="chip" onclick="quick('Fais-moi un brief stratégique sur LMIG cette semaine')">Brief LMIG</div>
+          <div class="chip" onclick="quick('Donne-moi mon plan de la journée')">Plan du jour</div>
+          <div class="chip" onclick="quick('Challenge ma dernière décision et sois direct')">Me challenger</div>
+          <div class="chip" onclick="quick('Je veux me confier à toi')">Me confier</div>
+          <div class="chip" onclick="quick('Que dois-je apprendre cette semaine pour LMIG ?')">Formation</div>
+          <div class="chip" onclick="quick('Analyse la structure de LMIG et dis-moi ce qui manque')">Analyse LMIG</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="file-preview" id="filePreview">
+        <span id="fileName"></span>
+        <span class="file-remove" onclick="removeFile()">✕</span>
+      </div>
+      <div class="tool-bar">
+        <button class="tool-btn" onclick="document.getElementById('fileInput').click()">📎 Fichier</button>
+        <button class="tool-btn" onclick="document.getElementById('imageInput').click()">🖼 Image</button>
+        <button class="tool-btn gold" onclick="triggerImageGen()">✦ Générer image</button>
+      </div>
+      <div class="input-row">
+        <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="9" y="2" width="6" height="13" rx="3"/>
+            <path d="M5 10a7 7 0 0014 0M12 19v4M8 23h8"/>
+          </svg>
+        </button>
+        <textarea id="inp" placeholder="Parle à Obevoir..." rows="1" onkeydown="handleKey(event)" oninput="resize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="send()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#060F1E" stroke-width="2.2">
+            <path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt,.xlsx,.csv" onchange="handleFile(event)" style="display:none">
+<input type="file" id="imageInput" accept="image/*" onchange="handleImage(event)" style="display:none">
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const GEMINI_URL = "/api/chat";
+
+// ElevenLabs (optionnel - voix clonée)
+const ELEVENLABS_API_KEY = "";
+const ELEVENLABS_VOICE_ID = "";
+
+// OpenAI (optionnel - génération images)
+const OPENAI_API_KEY = "";
+
+// ============================================================
+// PROFIL OBED
+// ============================================================
+const OBED_PROFILE = `
+Tu es OBEVOIR — l'intelligence personnelle de LOUZOLO Falone Obed.
+
+IDENTITÉ :
+- Nom : LOUZOLO Falone Obed
+- Né le 14 Septembre 2003 à Nkayi, Congo-Brazzaville (21 ans)
+- Résident à Dakar, Sénégal. Origine congolaise.
+- Partenaire : Grâce
+
+FORMATION :
+- CEPE, BEPC obtenus
+- Licence en pétrochimie (non encore soutenue)
+- Autodidacte avancé en entrepreneuriat
+
+STRUCTURE LMIG :
+LERMAR Investment Group (LMIG) est une Holding avec deux divisions internes :
+- LERMAR Foods : Restauration · Hub gastronomie nomade digitale
+- LERMAR Trans : Transport & Logistique urbaine
+C'est UNE SEULE entité. Ne jamais les traiter comme des entreprises séparées.
+
+PROJETS :
+- Lancement officiel de LMIG à Dakar
+- Construction de LMIG Chronos (plateforme interne modulaire)
+
+LANGUES : Français (principal), Anglais, Lingala
+
+TES RÔLES : Tu es simultanément Manager, Mentor et Précepteur d'Obed.
+TON TON : Direct et exigeant sur les décisions, chaleureux dans les moments personnels, structuré pour les tâches.
+RÈGLE : Tu peux contredire Obed franchement s'il a tort. Chaque réponse a une valeur réelle. Jamais de remplissage.
+LANGUE : Réponds toujours dans la langue qu'Obed utilise.
+`;
+
+const MODE_INSTRUCTIONS = {
+  general: "Adapte ton rôle naturellement selon le contexte.",
+  manager: "MODE MANAGER : organise, planifie, suis les priorités avec rigueur.",
+  mentor: "MODE MENTOR : challenge, guide stratégiquement, pose des questions profondes.",
+  precepteur: "MODE PRÉCEPTEUR : enseigne, forme, explique avec pédagogie.",
+  lmig: "MODE LMIG : focus exclusif sur la stratégie et les opérations de LMIG.",
+  perso: "MODE PERSO : espace de confiance, sois humain, chaleureux, sans jugement."
+};
+
+// ============================================================
+// ÉTAT
+// ============================================================
+let currentMode = 'general';
+let isRecording = false;
+let currentFile = null;
+let conversationHistory = [];
+let isGeneratingImage = false;
+let mediaRecorder = null;
+let audioChunks = [];
+
+// ============================================================
+// INTERFACE
+// ============================================================
+function setMode(btn, mode, label) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMode = mode;
+  document.getElementById('modeBadge').textContent = 'Mode ' + label;
+}
+
+function addMsg(text, role) {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+  const c = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  const time = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  d.innerHTML = `
+    <div class="msg-av ${role}">${role === 'ai' ? 'O' : 'OB'}</div>
+    <div class="msg-content">
+      <div class="bubble">${text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>
+      <div class="msg-time">${time}</div>
+    </div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addImgMsg(url) {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+  const c = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'msg ai';
+  const time = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  d.innerHTML = `
+    <div class="msg-av ai">O</div>
+    <div class="msg-content">
+      <img src="${url}" class="msg-img" alt="Image générée">
+      <div class="msg-time">${time}</div>
+    </div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addTyping() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+  const c = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'typing-wrap';
+  d.id = 'typing';
+  d.innerHTML = `
+    <div class="msg-av ai">O</div>
+    <div class="typing">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function clearChat() {
+  conversationHistory = [];
+  document.getElementById('messages').innerHTML = `
+    <div class="welcome" id="welcome">
+      <div class="welcome-logo">Obevoir</div>
+      <div class="welcome-tagline">Ton intelligence. Ta voix. Ta vision.</div>
+      <div class="welcome-chips">
+        <div class="chip" onclick="quick('Fais-moi un brief stratégique sur LMIG cette semaine')">Brief LMIG</div>
+        <div class="chip" onclick="quick('Donne-moi mon plan de la journée')">Plan du jour</div>
+        <div class="chip" onclick="quick('Challenge ma dernière décision et sois direct')">Me challenger</div>
+        <div class="chip" onclick="quick('Je veux me confier à toi')">Me confier</div>
+        <div class="chip" onclick="quick('Que dois-je apprendre cette semaine pour LMIG ?')">Formation</div>
+        <div class="chip" onclick="quick('Analyse la structure de LMIG et dis-moi ce qui manque')">Analyse LMIG</div>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// ENVOI MESSAGE — GEMINI
+// ============================================================
+async function send() {
+  const inp = document.getElementById('inp');
+  const text = inp.value.trim();
+  if (!text && !currentFile) return;
+
+  addMsg(text || '[Fichier joint]', 'user');
+  inp.value = '';
+  resize(inp);
+
+  const systemInstruction = OBED_PROFILE + '\nMODE ACTIF : ' + MODE_INSTRUCTIONS[currentMode];
+
+  conversationHistory.push({
+    role: 'user',
+    parts: [{ text: text || 'Analyse ce fichier.' }]
+  });
+
+  document.getElementById('sendBtn').disabled = true;
+  addTyping();
+
+  try {
+    const response = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: systemInstruction,
+        messages: conversationHistory
+      })
+    });
+
+    const data = await response.json();
+    removeTyping();
+
+    // CORRECTION ICI : On récupère 'data.reply' renvoyé par le proxy
+    const reply = data.reply || 'Je n\'ai pas pu répondre. Réessaie.';
+
+    conversationHistory.push({
+      role: 'model',
+      parts: [{ text: reply }]
+    });
+
+    addMsg(reply, 'ai');
+
+    if (ELEVENLABS_API_KEY && ELEVENLABS_VOICE_ID) {
+      speakText(reply);
+    }
+
+  } catch (err) {
+    removeTyping();
+    addMsg('Erreur de connexion. Vérifie ta connexion internet.', 'ai');
+    console.error(err);
+  }
+
+  removeFile();
+  document.getElementById('sendBtn').disabled = false;
+}
+
+// ============================================================
+// GÉNÉRATION IMAGE — DALL·E 3
+// ============================================================
+function triggerImageGen() {
+  const inp = document.getElementById('inp');
+  if (!inp.value.trim()) {
+    inp.placeholder = 'Décris l\'image à générer, puis clique ✦...';
+    inp.focus();
+    return;
+  }
+  generateImage(inp.value.trim());
+  inp.value = '';
+  resize(inp);
+}
+
+async function generateImage(prompt) {
+  if (!OPENAI_API_KEY) {
+    addMsg('Ajoute ta clé OpenAI dans le code pour générer des images.', 'ai');
+    return;
+  }
+  addMsg(prompt, 'user');
+  addTyping();
+  try {
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: 'dall-e-3',
+        prompt: `Professional image for LERMAR Investment Group (LMIG): ${prompt}. Luxury business aesthetic.`,
+        n: 1, size: '1024x1024'
+      })
+    });
+    const data = await response.json();
+    removeTyping();
+    if (data.data?.[0]?.url) {
+      addImgMsg(data.data[0].url);
+    } else {
+      addMsg('Erreur de génération d\'image.', 'ai');
+    }
+  } catch(e) {
+    removeTyping();
+    addMsg('Erreur lors de la génération.', 'ai');
+  }
+}
+
+// ============================================================
+// VOIX ELEVENLABS
+// ============================================================
+async function speakText(text) {
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'xi-api-key': ELEVENLABS_API_KEY },
+      body: JSON.stringify({
+        text: text.substring(0, 500),
+        model_id: 'eleven_multilingual_v2'
+      })
+    });
+    const blob = await res.blob();
+    new Audio(URL.createObjectURL(blob)).play();
+  } catch(e) { console.error('Erreur voix:', e); }
+}
+
+// ============================================================
+// MICRO
+// ============================================================
+async function toggleMic() {
+  const btn = document.getElementById('micBtn');
+  if (!isRecording) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        // Transcription simplifiée par Gemini via le proxy
+        const reader = new FileReader();
+        reader.onload = async () => {
+           addMsg("Note: Transcription audio non configurée sur le proxy.", "ai");
+        };
+        reader.readAsDataURL(blob);
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      isRecording = true;
+      btn.classList.add('recording');
+    } catch(e) {
+      addMsg('Accès au micro refusé.', 'ai');
+    }
+  } else {
+    mediaRecorder?.stop();
+    isRecording = false;
+    btn.classList.remove('recording');
+  }
+}
+
+// ============================================================
+// FICHIERS
+// ============================================================
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  currentFile = file;
+  document.getElementById('fileName').textContent = '📎 ' + file.name;
+  document.getElementById('filePreview').classList.add('show');
+}
+
+function handleImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  currentFile = file;
+  document.getElementById('fileName').textContent = '🖼 ' + file.name;
+  document.getElementById('filePreview').classList.add('show');
+}
+
+function removeFile() {
+  currentFile = null;
+  document.getElementById('filePreview').classList.remove('show');
+  document.getElementById('fileInput').value = '';
+  document.getElementById('imageInput').value = '';
+}
+
+// ============================================================
+// UTILITAIRES
+// ============================================================
+function quick(text) { document.getElementById('inp').value = text; send(); }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+function resize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+</script>
+</body>
+</html>
