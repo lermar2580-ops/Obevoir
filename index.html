@@ -48,7 +48,7 @@ async function send() {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: OBED_PROFILE, messages: history })
+      body: JSON.stringify({ system: OBED_PROFILE, messages: conversationHistory })
     });
 
     const data = await res.json();
