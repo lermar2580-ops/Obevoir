@@ -6,22 +6,28 @@ export default async function handler(req, res) {
   const { messages, system } = req.body;
   const apiKey = process.env.GEMINI_API_KEY || "AIzaSyAQZSG4N2uSXY9KHY14FQKiVmbMV1diJtc";
 
+  // Construction de l'URL avec le modèle spécifique "latest"
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
   try {
-    // Changement vers la version V1 (Stable)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        // Utilisation de la structure compatible V1
         contents: [
           {
             role: "user",
-            parts: [{ text: system }] // On passe les instructions système en premier message pour la compatibilité
+            parts: [{ text: "Instructions système : " + system }]
+          },
+          {
+            role: "model",
+            parts: [{ text: "Compris. Je suis Obevoir." }]
           },
           ...messages
         ],
         generationConfig: {
           temperature: 0.7,
+          topP: 0.95,
           maxOutputTokens: 2048,
         }
       })
@@ -29,20 +35,22 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    // Si Google renvoie une erreur
     if (data.error) {
-      console.error("Erreur détaillée:", data.error);
-      return res.status(400).json({ reply: "Erreur Google : " + data.error.message });
+      return res.status(data.error.code || 400).json({ 
+        reply: `Erreur Google (${data.error.status}) : ${data.error.message}` 
+      });
     }
 
-    if (!data.candidates || data.candidates.length === 0) {
-      return res.status(500).json({ reply: "L'IA n'a pas renvoyé de contenu. Vérifie tes quotas." });
-    }
-
-    const botReply = data.candidates[0].content.parts[0].text;
-    res.status(200).json({ reply: botReply });
+    // Vérification de la présence de candidats
+    if (data.candidates && data.candidates[0].content) {
+      const botReply = data.candidates[0].content.parts[0].text;
+      return res.status(200).json({ reply: botReply });
+    } 
+    
+    return res.status(500).json({ reply: "L'IA n'a pas pu générer de texte (Filtre de sécurité ou erreur interne)." });
 
   } catch (error) {
-    console.error("Erreur Serveur:", error);
-    res.status(500).json({ reply: "Erreur technique : " + error.message });
+    return res.status(500).json({ reply: "Erreur de connexion au serveur Vercel : " + error.message });
   }
 }
