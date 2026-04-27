@@ -4,94 +4,224 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Obevoir — Intelligence Personnelle</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* STYLE DE LUXE OBEVOIR */
-:root { --gold: #C9A84C; --navy: #060F1E; --navy-light: #0D1A2E; --text: #E8EDF5; }
-body { background: var(--navy); color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-.sidebar { width: 240px; border-right: 1px solid rgba(201,168,76,0.2); display: flex; flex-direction: column; background: var(--navy); }
-.brand { padding: 30px; text-align: center; border-bottom: 1px solid rgba(201,168,76,0.1); }
-.avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #C9A84C, #8B6914); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond'; font-size: 24px; color: var(--navy); font-weight: bold; }
-.main { flex: 1; display: flex; flex-direction: column; }
-.messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-.bubble { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 14px; line-height: 1.6; }
-.ai { align-self: flex-start; background: var(--navy-light); border: 1px solid rgba(74,122,200,0.2); }
-.user { align-self: flex-end; background: rgba(201,168,76,0.1); border: 1px solid var(--gold); }
-.input-area { padding: 20px; border-top: 1px solid rgba(201,168,76,0.2); background: var(--navy); }
-.tool-bar { display: flex; gap: 10px; margin-bottom: 10px; }
-.tool-btn { background: none; border: 1px solid rgba(201,168,76,0.3); color: var(--gold); padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-.input-row { display: flex; gap: 10px; }
-textarea { flex: 1; background: var(--navy-light); border: 1px solid rgba(74,122,200,0.2); border-radius: 10px; color: white; padding: 12px; resize: none; outline: none; }
-.send-btn { background: var(--gold); border: none; width: 45px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+/* --- DESIGN DE LUXE ORIGINAL --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #C9A84C;
+  --gold-dim: rgba(201,168,76,0.12);
+  --gold-border: rgba(201,168,76,0.25);
+  --gold-border-s: rgba(201,168,76,0.45);
+  --navy: #0A1628;
+  --navy-2: #060F1E;
+  --navy-3: #0D1A2E;
+  --navy-4: #112038;
+  --blue-light: #4A7AC8;
+  --blue-dim: rgba(74,122,200,0.12);
+  --blue-border: rgba(74,122,200,0.2);
+  --text: #E8EDF5;
+  --text-mid: #8AA0C0;
+  --text-dim: #3A5070;
+  --success: #3DBE7A;
+}
+html, body { height: 100%; overflow: hidden; background: var(--navy-2); color: var(--text); font-family: 'DM Sans', sans-serif; }
+.app { display: flex; height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { width: 220px; background: var(--navy-2); border-right: 0.5px solid var(--gold-border); display: flex; flex-direction: column; flex-shrink: 0; }
+.brand { padding: 24px 18px 20px; border-bottom: 0.5px solid var(--gold-border); text-align: center; }
+.brand-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #C9A84C, #8B6914); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--navy-2); box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 8px 24px rgba(201,168,76,0.15); position: relative; }
+.brand-avatar::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: var(--success); border-radius: 50%; border: 2px solid var(--navy-2); }
+.brand-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; letter-spacing: 0.18em; color: var(--gold); margin-bottom: 3px; }
+.brand-sub { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.section-label { font-size: 8px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 18px 6px; }
+.modes { padding: 0 10px; display: flex; flex-direction: column; gap: 2px; }
+.mode-btn { padding: 7px 10px; border-radius: 7px; border: 0.5px solid transparent; background: transparent; color: var(--text-mid); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+.mode-btn.active { background: var(--gold-dim); border-color: var(--gold-border-s); color: var(--gold); }
+
+.memory-panel { margin-top: auto; border-top: 0.5px solid var(--gold-border); padding: 14px 18px; }
+.memory-item { font-size: 10px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; line-height: 1.6; }
+.memory-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; opacity: 0.6; }
+
+/* MAIN AREA */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; border-bottom: 0.5px solid var(--gold-border); }
+.mode-badge { font-size: 11px; color: var(--gold); background: var(--gold-dim); border: 0.5px solid var(--gold-border-s); border-radius: 20px; padding: 3px 10px; }
+
+.messages { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+.bubble { padding: 11px 15px; border-radius: 13px; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; max-width: 80%; }
+.ai .bubble { background: var(--navy-3); border: 0.5px solid var(--blue-border); align-self: flex-start; }
+.user .bubble { background: rgba(201,168,76,0.08); border: 0.5px solid var(--gold-border-s); align-self: flex-end; }
+.msg { display: flex; gap: 10px; }
+.msg.user { flex-direction: row-reverse; }
+
+/* INPUT */
+.input-area { border-top: 0.5px solid var(--gold-border); padding: 15px 22px; background: var(--navy-2); }
+.tool-bar { display: flex; gap: 8px; margin-bottom: 10px; }
+.tool-btn { padding: 5px 12px; border-radius: 6px; border: 0.5px solid var(--blue-border); background: transparent; color: var(--text-mid); font-size: 11px; cursor: pointer; }
+.tool-btn:hover { border-color: var(--gold); color: var(--gold); }
+.input-row { display: flex; gap: 10px; align-items: flex-end; }
+textarea { flex: 1; background: var(--navy-3); border: 0.5px solid var(--blue-border); border-radius: 11px; padding: 11px; color: white; resize: none; outline: none; min-height: 44px; }
+.send-btn { width: 44px; height: 44px; border-radius: 11px; background: var(--gold); border: none; cursor: pointer; color: var(--navy-2); font-weight: bold; }
+.recording { border-color: #E05252 !important; color: #E05252 !important; }
+.file-preview { display: none; padding: 8px; background: var(--navy-4); border-radius: 8px; margin-bottom: 8px; font-size: 12px; }
+.file-preview.show { display: block; }
 </style>
 </head>
 <body>
+<div class="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="avatar">O</div>
-      <div style="font-family:'Cormorant Garamond'; letter-spacing:2px; color:var(--gold);">OBEVOIR</div>
+      <div class="brand-avatar">O</div>
+      <div class="brand-name">OBEVOIR</div>
+      <div class="brand-sub">Intelligence Personnelle</div>
     </div>
-    <div style="padding: 20px; font-size: 11px; color: #8AA0C0; text-transform: uppercase;">Modes</div>
-    <button class="tool-btn" style="margin: 0 20px 5px;" onclick="setMode('Manager')">Manager</button>
-    <button class="tool-btn" style="margin: 0 20px 5px;" onclick="setMode('Mentor')">Mentor</button>
-    <button class="tool-btn" style="margin: 0 20px 5px;" onclick="setMode('LMIG')">LMIG Strategy</button>
+    <div class="section-label">Modes</div>
+    <div class="modes">
+      <button class="mode-btn active" onclick="setMode(this,'general','Général')">◈ Général</button>
+      <button class="mode-btn" onclick="setMode(this,'manager','Manager')">⊞ Manager</button>
+      <button class="mode-btn" onclick="setMode(this,'mentor','Mentor')">◎ Mentor</button>
+      <button class="mode-btn" onclick="setMode(this,'lmig','LMIG')">▣ LMIG</button>
+    </div>
+    <div class="memory-panel">
+      <div class="memory-item"><span class="memory-dot"></span>LMIG Holding · Dakar</div>
+      <div class="memory-item"><span class="memory-dot"></span>DG Falone Obed</div>
+    </div>
   </aside>
 
   <main class="main">
-    <div class="messages" id="chat">
-      <div class="bubble ai">Prêt pour la stratégie LMIG, Obed.</div>
+    <div class="topbar">
+      <span class="mode-badge" id="modeBadge">Mode Général</span>
+      <button class="tool-btn" onclick="location.reload()">↺ Reset</button>
     </div>
+
+    <div class="messages" id="messages">
+      <div class="msg ai"><div class="bubble">Prêt pour la stratégie LMIG, Obed.</div></div>
+    </div>
+
     <div class="input-area">
+      <div class="file-preview" id="filePreview"><span id="fileName"></span></div>
       <div class="tool-bar">
-        <button class="tool-btn" onclick="alert('Micro activé')">🎤 Vocal</button>
-        <button class="tool-btn" onclick="alert('Explorateur ouvert')">📎 Fichier</button>
-        <button class="tool-btn" style="color:white; border-color:white;">🖼 Image</button>
+        <button class="tool-btn" onclick="document.getElementById('fileInput').click()">📎 Fichier</button>
+        <button class="tool-btn" onclick="document.getElementById('imageInput').click()">🖼 Image</button>
+        <button class="tool-btn" id="micBtn" onclick="toggleMic()">🎤 Vocal</button>
       </div>
       <div class="input-row">
-        <textarea id="inp" placeholder="Parle à Obevoir..." rows="1"></textarea>
+        <textarea id="inp" placeholder="Parle à Obevoir..." rows="1" onkeydown="handleKey(event)"></textarea>
         <button class="send-btn" onclick="send()">➤</button>
       </div>
     </div>
   </main>
+</div>
+
+<input type="file" id="fileInput" onchange="handleFile(event)" style="display:none">
+<input type="file" id="imageInput" accept="image/*" onchange="handleFile(event)" style="display:none">
 
 <script>
-const OBED_PROFILE = "Tu es OBEVOIR, l'IA de LOUZOLO Falone Obed, DG de LMIG (Foods & Trans). Sois direct et stratégique.";
-let history = [];
-let currentMode = "Général";
+const OBED_PROFILE = "Tu es OBEVOIR, l'IA de LOUZOLO Falone Obed, DG de LMIG. Sois direct et stratégique.";
+let conversationHistory = [];
+let currentMode = 'general';
+let selectedFile = null;
+let isRecording = false;
+let mediaRecorder;
 
-function setMode(m) { currentMode = m; alert("Mode " + m + " activé"); }
+function setMode(btn, mode, label) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMode = mode;
+  document.getElementById('modeBadge').textContent = 'Mode ' + label;
+}
 
+function addMsg(text, role) {
+  const c = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  d.innerHTML = `<div class="bubble">${text}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+// GESTION DES FICHIERS
+async function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    selectedFile = {
+      mime_type: file.type,
+      data: event.target.result.split(',')[1]
+    };
+    document.getElementById('fileName').textContent = '📎 ' + file.name;
+    document.getElementById('filePreview').classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+// GESTION DU VOCAL
+async function toggleMic() {
+  const btn = document.getElementById('micBtn');
+  if (!isRecording) {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    let chunks = [];
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'fr-FR';
+      recognition.onresult = (e) => {
+        document.getElementById('inp').value = e.results[0][0].transcript;
+        send();
+      };
+      recognition.start();
+    };
+    mediaRecorder.start();
+    btn.classList.add('recording');
+    isRecording = true;
+  } else {
+    mediaRecorder.stop();
+    btn.classList.remove('recording');
+    isRecording = false;
+  }
+}
+
+// ENVOI
 async function send() {
   const inp = document.getElementById('inp');
-  if (!inp.value.trim()) return;
-  
   const text = inp.value.trim();
-  addMsg(text, 'user');
+  if (!text && !selectedFile) return;
+
+  addMsg(text || "Analyse de fichier...", 'user');
   inp.value = '';
-  history.push({ role: "user", parts: [{ text: text }] });
+
+  const body = {
+    system: OBED_PROFILE + " Mode: " + currentMode,
+    messages: [...conversationHistory, { role: 'user', parts: [{ text: text || "Analyse ce fichier." }] }],
+    fileData: selectedFile
+  };
 
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: OBED_PROFILE + " Mode: " + currentMode, messages: history })
+      body: JSON.stringify(body)
     });
     const data = await res.json();
-    const reply = data.reply || "Erreur de connexion.";
-    addMsg(reply, 'ai');
-    history.push({ role: "model", parts: [{ text: reply }] });
+    addMsg(data.reply, 'ai');
+    conversationHistory.push({ role: 'user', parts: [{ text: text }] });
+    conversationHistory.push({ role: 'model', parts: [{ text: data.reply }] });
+    
+    // Reset fichier
+    selectedFile = null;
+    document.getElementById('filePreview').classList.remove('show');
   } catch (e) {
-    addMsg("Erreur réseau.", "ai");
+    addMsg("Erreur réseau.", 'ai');
   }
 }
 
-function addMsg(t, s) {
-  const d = document.createElement('div');
-  d.className = 'bubble ' + s;
-  d.innerText = t;
-  document.getElementById('chat').appendChild(d);
-  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
-}
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
 </script>
 </body>
 </html>
